@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 7bdb9ab7ce9c1d941b3ac2238035c57e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - scriptVida: {fileID: 2674390401215175160, guid: 6259ede27e3033549aa7b6abe18d33ec, type: 3}
+  - meteoritoScript: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
