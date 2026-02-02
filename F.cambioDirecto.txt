@@ -1,0 +1,28 @@
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class tiempoScript : MonoBehaviour
+{
+    public float tiempo = 60f;
+    public Image relog;
+    public TextMeshProUGUI puntuacion;
+
+    void Update()
+    {
+        // Solo contamos si el tiempo es mayor a 0
+        if (tiempo > 0f)
+        {
+            tiempo -= Time.deltaTime;
+            puntuacion.text = (6000 - (int)(tiempo * 100)).ToString();
+            relog.fillAmount = tiempo / 60f;
+        }
+        else 
+        {
+            // --- CAMBIO DE ESCENA DIRECTO ---
+            // Usamos la ruta completa para no necesitar el 'using' arriba
+            Time.timeScale = 1f; // Reseteamos el tiempo para que la siguiente escena funcione
+            UnityEngine.SceneManagement.SceneManager.LoadScene("final"); 
+        }
+    }
+}

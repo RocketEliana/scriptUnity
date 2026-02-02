@@ -1,0 +1,181 @@
+
+
+Escenario 1: Control de Fin de Juego (Paneles y Cambio de Escena)
+Este escenario cubre el requisito de que el juego termine cuando las vidas lleguen a cero o el tiempo acabe.
+
+1.1 IniciarScript.cs (El Navegador Universal)
+Este script gestiona tanto el botón de la pantalla inicial como el botón del "Panel Final".
+
+C#
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class IniciarScript : MonoBehaviour
+{
+    public Button iniciarButton;
+
+    void Start()
+    {
+        // Si asignas un botón en el Inspector, funcionará al inicio
+        if (iniciarButton != null)
+            iniciarButton.onClick.AddListener(empezar);
+    }
+
+    void empezar()
+    {
+        SceneManager.LoadScene(1); // Carga el nivel
+    }
+
+    // FUNCIÓN PARA EL BOTÓN DE "IR AL FINAL"
+    public void irAlFinal()
+    {
+        Time.timeScale = 1f; // Resetea el tiempo para que la nueva escena no esté pausada
+        SceneManager.LoadScene("final"); // Nombre exacto de la escena en Build Settings
+    }
+}
+1.2 tiempoScript.cs (El Cronómetro con Panel)
+Actualizado para activar el menú cuando el tiempo se agote.
+
+C#
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class tiempoScript : MonoBehaviour
+{
+    public float tiempo = 60f;
+    public Image relog;
+    public TextMeshProUGUI puntuacion;
+    public GameObject panelFinal; // Arrastra el panel aquí
+
+    void Update()
+    {
+        if (tiempo > 0f)
+        {
+            tiempo -= Time.deltaTime;
+            [cite_start]// La puntuación aumenta con el tiempo según el GDD [cite: 43]
+            puntuacion.text = (6000 - (int)(tiempo * 100)).ToString();
+            relog.fillAmount = tiempo / 60f;
+        }
+        else
+        {
+            tiempo = 0;
+            Time.timeScale = 0f; // Pausa el juego
+            if (panelFinal != null) panelFinal.SetActive(true);
+        }
+    }
+}
+Escenario 2:
+ Dificultad Progresiva (Velocidad y Spawn)
+El GDD especifica que a medida que el meteoro se acerca a la Tierra, la velocidad y cantidad de proyectiles aumenta.
+
+2.1 CrearCoheteGris.cs (Aumento de Spawn)
+Este script genera enemigos cada vez más rápido.
+
+C#
+using UnityEngine;
+
+public class CrearCoheteGris : MonoBehaviour
+{
+    public GameObject cohetePrefab;
+    private float tiempo, intervalo = 3f;
+
+    void Update()
+    {
+        tiempo += Time.deltaTime;
+
+        // Lógica de examen: Si ha pasado más de la mitad del tiempo, spawn ultra rápido
+        // Suponiendo un nivel de 60s, a los 30s se vuelve difícil
+        float dificultadIntervalo = (Time.timeSinceLevelLoad > 30f) ? 0.8f : Random.Range(2f, 4f);
+
+        if (tiempo > dificultadIntervalo)
+        {
+            GameObject.Instantiate(cohetePrefab, new Vector3(12, Random.Range(-4.5f, 4.5f), -1), Quaternion.identity);
+            tiempo = 0f;
+        }
+    }
+}
+2.2 CoheteGrisScript.cs (Aumento de Velocidad)
+Los cohetes se mueven más rápido según avanza la partida.
+
+C#
+using UnityEngine;
+
+public class CoheteGrisScript : MonoBehaviour
+{
+    public float velocidad = 1f;
+    public Sprite[] planetas; 
+
+    void Start() { 
+        if(planetas.Length > 0)
+            GetComponent<SpriteRenderer>().sprite = planetas[Random.Range(0, planetas.Length)];
+    }
+
+    void Update()
+    {
+        // Aumenta la velocidad un 10% por cada 10 segundos de juego transcurridos
+        float vFinal = velocidad + (Time.timeSinceLevelLoad * 0.1f);
+        
+        transform.position += Vector3.left * vFinal * Time.deltaTime;
+
+        if (transform.position.x < -11f) Destroy(gameObject);
+    }
+}
+Escenario 3: "Modo Jefe" (IA Agresiva al Final)
+Para simular un "Jefe Final" o defensa desesperada de los humanos.
+
+3.1 SateliteScript.cs (Ataque Frenético)
+El satélite te busca con mucha más agresividad en los últimos segundos.
+
+C#
+using UnityEngine;
+
+public class SateliteScript : MonoBehaviour
+{
+    public float velocidad = 2f;
+    public float factor = 2f;
+    private Vector3 posicionAtaque;
+    private Vector3 posicion_meteoro = Vector3.zero;
+    private Vector3 direccion_ataque = Vector3.zero;
+    private bool llegarPosicion = false;
+
+    void Start() {
+        posicionAtaque = new Vector3(0f, Random.Range(-4.5f, 4.5f), transform.position.z);
+        Destroy(gameObject, 25f);
+    }
+
+    void Update()
+    {
+        if (!llegarPosicion) {
+            transform.position = Vector3.MoveTowards(transform.position, posicionAtaque, velocidad * Time.deltaTime);
+            if (transform.position == posicionAtaque) llegarPosicion = true;
+        } else {
+            if (posicion_meteoro == Vector3.zero) {
+                posicion_meteoro = Localizar("Player", 25f); // Asegúrate de que el Meteorito tenga Tag "Player"
+                direccion_ataque = (posicion_meteoro - transform.position).normalized;
+            } else {
+                // MODO JEFE: Si quedan menos de 15 seg (aprox seg 45), el factor de ataque sube mucho
+                float fFinal = (Time.timeSinceLevelLoad > 45f) ? 12f : factor;
+                transform.position += direccion_ataque * velocidad * fFinal * Time.deltaTime;
+            }
+        }
+    }
+
+    Vector3 Localizar(string tipo, float radio) {
+        Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+        foreach (var obj in objetos) {
+            if (obj.CompareTag(tipo)) return obj.transform.position;
+        }
+        return Vector3.zero;
+    }
+
+Tags: Comprueba que tu objeto jugador tiene el Tag "Player".
+
+
+Build Settings: Añade las escenas "Menu", "Nivel1" y "final" antes de empezar.
+
+
+Z-Axis: Mantén la posición Z en 0 o -1 para que los sprites no desaparezcan detrás del fondo.
+
+Botones: Si un botón no hace nada, revisa si el objeto que tiene el script está arrastrado al evento On Click() del botón en el Inspector.
