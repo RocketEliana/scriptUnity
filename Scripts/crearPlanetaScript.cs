@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class crearPlanetaScript : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+   
     [Header("Prefab de planeta")]
     public GameObject planetaPrefab;
-    private float tiempo,intervalo = 5f;
+    private float tiempo,intervalo;
     void Start()
     {
         tiempo = 0f;
-        // Establecer un intervalo inicial aleatorio entre 3 y 7 segundos
-        intervalo = Random.Range(3f, 7f);
+        // Establecer un intervalo inicial aleatorio entre 3 y 10
+        // segundos
+        intervalo = Random.Range(5f, 10f);
 
 
     }
@@ -23,7 +24,7 @@ public class crearPlanetaScript : MonoBehaviour
             //Quaternion.identity representa la rotación sin cambios
             GameObject.Instantiate(planetaPrefab, new Vector3(12,Random.Range(-4.5f, 4.5f), -1), Quaternion.identity);
             tiempo = 0f;
-            intervalo = Random.Range(3f, 5f);
+            intervalo = Random.Range(5f, 10f);
         }
         else
         {

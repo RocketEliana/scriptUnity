@@ -4,7 +4,7 @@ public class CrearCoheteGris : MonoBehaviour
 {   // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("Prefab de cohete")]
     public GameObject cohetePrefab;
-    private float tiempo, intervalo = 3f;
+    private float tiempo, intervalo;
   
     void Start()
     {

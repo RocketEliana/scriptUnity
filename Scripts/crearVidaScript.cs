@@ -14,7 +14,8 @@ public class crearVidaScript : MonoBehaviour
     void Start()
     {
         tiempoActual = 0f;
-        intervalo = Random.Range(15f, 45f);
+        intervalo = Random.Range(15f, 40f);
+        
     }
 
     void Update()
@@ -35,7 +36,7 @@ public class crearVidaScript : MonoBehaviour
             Instantiate(prefabVida, new Vector3(12, Random.Range(-4.5f, 4.5f), -1), Quaternion.identity);
 
             tiempoActual = 0f;
-            intervalo = Random.Range(15f, 45f);
+            intervalo = Random.Range(15f, 40f);
         }
     }
 }

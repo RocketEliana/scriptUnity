@@ -4,7 +4,7 @@ public class crearCoheteNegro : MonoBehaviour
 {
     [Header("Prefab de cohete")]
     public GameObject cohetePrefab;
-    private float tiempo, intervalo = 3f;
+    private float tiempo, intervalo;
   
     void Start()
     {

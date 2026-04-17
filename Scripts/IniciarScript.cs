@@ -13,7 +13,7 @@ public class IniciarScript : MonoBehaviour
     void empezar()
     {
         SceneManager.
-            LoadScene(1);
+            LoadScene("EscenaPrincipal");
     }
     // Update is called once per frame
     void Update()

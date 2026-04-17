@@ -1,4 +1,4 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 
 public class SateliteScript : MonoBehaviour
 {
@@ -6,6 +6,7 @@ public class SateliteScript : MonoBehaviour
     [Tooltip("Velocidad del satelite")]
     public float velocidad = 1f;
     public float factor = 2f;
+    public int da√±o = 3;
 
     private Vector3 posicionAtaque;
     private Vector3 posicion_meteoro = new Vector3(0f, 0f, 0f);
@@ -14,41 +15,38 @@ public class SateliteScript : MonoBehaviour
 
     void Start()
     {
-        // LÌmites de pantalla en 4.5f
+        // L√≠mites de pantalla en 4.5f
         posicionAtaque = new Vector3(0f, Random.Range(-4.5f, 4.5f), transform.position.z);
-        Destroy(gameObject, 25f);
+        Destroy(gameObject, 30f);
     }
 
     void Update()
     {
         if (!llegarPosicion)
         {
-            // Movimiento: e = v * t
             transform.position = Vector3.MoveTowards(transform.position, posicionAtaque, velocidad * Time.deltaTime);
 
+            // ‚Üê Comprueba si ha llegado
             if (transform.position == posicionAtaque)
-            {
                 llegarPosicion = true;
-            }
         }
-
-        // Si ya llegÛ a la posiciÛn y no tiene localizado el meteoro, lo busca
-        else{
-            if(posicion_meteoro==new Vector3(0f,0f,0f))
+        else // ‚Üê Solo busca al jugador UNA VEZ ha llegado a su posici√≥n
         {
-            posicion_meteoro = Localizar("Player", 25f);
-                //fijo posicion de ataque
-                                direccion_ataque = (posicion_meteoro - transform.position).normalized;
-                //normalizo la direccion
+            if (posicion_meteoro == Vector3.zero)
+            {
+                posicion_meteoro = Localizar("Player", 25f);
+                direccion_ataque = (posicion_meteoro - transform.position).normalized;
             }
-            else { 
-                //Movimiento hacia el meteoro
-                transform.position += direccion_ataque * velocidad * factor * Time.deltaTime;
+            else
+            {
+                transform.position = Vector3.MoveTowards(
+                    transform.position,
+                    posicion_meteoro,
+                    velocidad * factor * Time.deltaTime
+                );
             }
         }
     }
-
-    // MÈtodo que localiza cualquier collider en el radio pasado por par·metro
     Vector3 Localizar(string tipo, float radio)
     {
         Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
