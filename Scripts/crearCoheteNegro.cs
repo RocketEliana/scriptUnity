@@ -20,7 +20,7 @@ public class crearCoheteNegro : MonoBehaviour
         if (tiempo > intervalo)
         {
             //Quaternion.identity representa la rotación sin cambios
-            GameObject.Instantiate(cohetePrefab, new Vector3(12, Random.Range(-4.5f, 4.5f), -1), Quaternion.identity);
+            GameObject.Instantiate(cohetePrefab, new Vector3(12, Random.Range(-4.5f, 4.5f), 0), Quaternion.identity);
             tiempo = 0f;
             intervalo = Random.Range(3f, 5f);
         }

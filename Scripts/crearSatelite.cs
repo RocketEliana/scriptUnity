@@ -11,7 +11,7 @@ public class crearSatelite : MonoBehaviour
     {
         tiempo = 0f;
         // Establecer un intervalo inicial aleatorio entre 3 y 7 segundos
-        intervalo = Random.Range(2f, 4f);
+        intervalo = Random.Range(3f, 5f);
 
     }
 
@@ -21,7 +21,7 @@ public class crearSatelite : MonoBehaviour
         if (tiempo > intervalo)
         {
             //Quaternion.identity representa la rotación sin cambios
-            GameObject.Instantiate(scriptPrefab, new Vector3(12, Random.Range(-4.5f, 4.5f), -1), Quaternion.identity);
+            GameObject.Instantiate(scriptPrefab, new Vector3(12, Random.Range(-4.5f, 4.5f), 0), Quaternion.identity);
             tiempo = 0f;
             intervalo = Random.Range(3f, 5f);
         }

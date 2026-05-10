@@ -1,0 +1,238 @@
+***************************************************************************** 
+LIMITAR PANTALLA
+if (transform.position.x <= -7f   // ← borde izquierdo
+ || transform.position.x >= 7f    // → borde derecho
+ || transform.position.y >= 4.5f  // ↑ borde superior
+ || transform.position.y <= -4.5f) // ↓ borde inferior
+{
+    actual = Estados.redireccionar;
+}
+**********************************************
+***********************************************
+*******************************************
+MOVIMIENTO OSCILATORIO,ARRIBA ABAJO
+Esto oscila entre 0 y 8. Luego le restamos 4 para que sea entre -4 y 4.
+                    float movimientoY = Mathf.PingPong(Time.time * velocidad, 8) - 4;
+                    transform.position = new Vector3(7f, movimientoY, 0);
+                    posMeteo = Localizar("Player", 25);
+                    tiempoDisparo += Time.deltaTime;
+float movimientoY = Mathf.PingPong(Time.time * velocidad, 10) - 5;
+$$movimiento = Mathf.PingPong(Time.time * velocidad, DistanciaTotal) + ValorMinimo$$
+*****************************************************************************
+    PASAR PARAMETRO TIEMPO
+
+    IEnumerator disparar()
+    {
+        while (disparando)
+        {
+            Instantiate(prefabDisparo, puntDisparo.position, Quaternion.identity);
+            // 3.c: En fases de localización dispara cada 1s, si no cada 2s
+            float espera = (actual == Estado.localizarFase1 || actual == Estado.localizarFase2) ? 1f : 2f;
+            yield return new WaitForSeconds(espera);
+        }
+    }
+
+**********************************
+MAS LEJANO
+   Vector3 Localizar(string tipo, float radio)
+   {
+       Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+
+       Vector3 masLejano = Vector3.zero;
+       float mayorDistancia = 0;
+
+       for (int i = 0; i < objetos.Length; i++)
+       {
+           if (objetos[i].CompareTag(tipo))
+           {
+               float distancia = Vector3.Distance(
+                   transform.position,
+                   objetos[i].transform.position
+               );
+
+               if (distancia > mayorDistancia)
+               {
+                   mayorDistancia = distancia;
+                   masLejano = objetos[i].transform.position;
+               }
+           }
+       }
+
+       return masLejano;
+   }
+***********************************************************************
+CAMBIO COLOR
+
+ SpriteRenderer sr = GetComponent<SpriteRenderer>();
+ sr.color = Color.red;
+En la corrutina  SpriteRenderer sr = GetComponent<SpriteRenderer>();
+ sr.color = Color.white;
+**************************************************************************
+CORRUTINA EN UPDATE::
+  case Estado.pingPong:
+      timePinPong += Time.deltaTime;
+      float movimientoX = Mathf.PingPong(Time.time * velocidad, 14) - 7;
+      transform.position = new Vector3(movimientoX, 0, 0);
+      if (!disparando)//LLAMA SOLO UNA VEZ!!EN EL SEGUNDO FRAME YA ES TRUE,NO VA A ENTRAR MAS Y TE VA A HACER UN TUBO!!!!
+      {
+      disparando = true;
+      StartCoroutine(disparo());
+       }
+
+
+      if (timePinPong >= 8f)
+      {
+          disparando = false;
+          actual = Estado.localizaMeteoro;
+
+      }
+******************************************
+SLIDER,pero no prefabs
+public Slider barraVida;
+    public int vidaMax = 100;
+    private int vidaActual;
+
+    void Start()
+    {
+        vidaActual = vidaMax;
+        barraVida.maxValue = vidaMax;
+        barraVida.value = vidaActual;
+    }
+
+    public void RecibirDanio(int danio)
+    {
+        vidaActual -= danio;
+        barraVida.value = vidaActual;
+    }
+*************************************
+***********************************
+LIMITE V -------------lo mejor:
+// Si el objeto se sale del rango horizontal, cambia de estado
+if (transform.position.x < -7f || transform.position.x > 7f)
+{
+    actual = Estados.aparecer;
+}
+******************************ESto queda muy chill pero es un lio para comparar
+        // ← Limitar X al final de cada frame
+        transform.position = new Vector3(
+            Mathf.Clamp(transform.position.x, -7f, 7f),
+            transform.position.y,
+            transform.position.z
+        );
+    }
+***************************************
+****************************************
+-------Vector 3 fija,luego recalcula,transform persigue-------que me pide el enunciado?____
+___________________________
+***********___
+
+
+MAS LEJANO
+Transform Localizar(string tipo, float radio)
+{
+    Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+    Transform masLejano = null;
+    float maxDistancia = -1f;
+
+    for (int i = 0; i < objetos.Length; i++)
+    {
+        if (objetos[i].gameObject.CompareTag(tipo))
+        {
+            float distancia = Vector3.Distance(transform.position, objetos[i].transform.position);
+            if (distancia > maxDistancia)
+            {
+                maxDistancia = distancia;
+                masLejano = objetos[i].transform;
+            }
+        }
+    }
+
+    return masLejano; // null si no encontró ninguno
+}***************************************
+****************************************
+PRIMERO
+ Transform Localizar(string tipo, float radio) // ← devuelve Transform
+ {
+     Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+     for (int i = 0; i < objetos.Length; i++)
+     {
+         if (objetos[i].gameObject.CompareTag(tipo))
+         {
+             return objetos[i].transform; // ← devuelve el Transform
+         }
+     }
+     return null;
+ }
+**************************************
+****************************************
+Con Vector,cualquiera,usado para player por que solo hay uno
+  Vector3 Localizar(string tipo, float radio)
+  {
+      Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+
+      for (int i = 0; i < objetos.Length; i++)
+      {
+          if (objetos[i].gameObject.CompareTag(tipo))
+          {
+              return objetos[i].transform.position;
+          }
+      }
+
+      return Vector3.zero; // Retorna vector cero si no encuentra nada
+  }
+*******************************************
+********************************************
+VECTOR3 MAS LEJANO Vector3 LocalizarMasLejano(string tipo, float radio)
+{
+    Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+
+    float distanciaMax = 0f;
+    Transform masLejano = null;
+
+    for (int i = 0; i < objetos.Length; i++)
+    {
+        if (objetos[i].gameObject.CompareTag(tipo))
+        {
+            float distancia = Vector3.Distance(transform.position, objetos[i].transform.position);
+
+            if (distancia > distanciaMax)
+            {
+                distanciaMax = distancia;
+                masLejano = objetos[i].transform;
+            }
+        }
+    }
+
+    if (masLejano != null)
+        return masLejano.position;
+
+    return Vector3.zero;
+}
+*************
+****************
+Vector3 MAS cercano
+Vector3 Localizar(string tipo, float radio)
+{
+    Collider2D[] objetos = Physics2D.OverlapCircleAll(transform.position, radio);
+    
+    Collider2D masCercano = null;
+    float menorDistancia = Mathf.Infinity;
+
+    for (int i = 0; i < objetos.Length; i++)
+    {
+        if (objetos[i].gameObject.CompareTag(tipo))
+        {
+            float distancia = Vector3.Distance(transform.position, objetos[i].transform.position);
+            if (distancia < menorDistancia)
+            {
+                menorDistancia = distancia;
+                masCercano = objetos[i];
+            }
+        }
+    }
+
+    if (masCercano != null)
+        return masCercano.transform.position;
+
+    return Vector3.zero;
+}

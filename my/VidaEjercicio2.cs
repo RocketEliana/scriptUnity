@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class VidaScript : MonoBehaviour
+public class VidaEjercicio2 : MonoBehaviour
 {
     public int vida;
-    public float velocidad = 2f;
+    public float velocidad = 1f;
     private void Start() {
         Destroy(gameObject, 25f);
     }

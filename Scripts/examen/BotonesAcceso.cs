@@ -2,9 +2,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class IniciarScript: MonoBehaviour
+public class BotonesAcceso : MonoBehaviour
 {
-    public  Button iniciarButton;
+
+    public Button iniciarButton;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -13,11 +14,11 @@ public class IniciarScript: MonoBehaviour
     void empezar()
     {
         SceneManager.
-            LoadScene("EscenaPrincipal");
+            LoadScene("Examen");
     }
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
